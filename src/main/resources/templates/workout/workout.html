@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org/"
+      th:replace="~{layout :: layout(~{::title}, ~{::section.content-header}, ~{::section.content}, ~{}, ~{::script})}">
+<head>
+    <title>Тренировки</title>
+</head>
+<body>
+<section class="content container pt-4">
+    <div class="row">
+        <div class="col">
+            <h1>Тренировка <span th:text="${workout.getWorkoutType()}">{{ $workout->workout_type }}</span></h1>
+        </div>
+        <div class="col text-end">
+            <a th:href="@{/workouts}">&leftarrow; Назад к тренировкам</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <ul class="nav nav-tabs" id="tab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="pulse-tab" data-bs-toggle="tab" data-target=".pulse-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+                        Пульс
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="temp-tab" data-bs-toggle="tab" data-target=".temp-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+                        Темп
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="speed-tab" data-bs-toggle="tab" data-target=".speed-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+                        Скорость
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content" id="tabContent">
+                <div th:each="task: ${workout.tasks}" class="shadow bg-box p-3 mt-4">
+                    <h4 style="color: #1c7430" th:if="${task.isWarmup()}">Зарядка</h4>
+                    <h4 style="color: #2a78b2" th:if="${task.isCooldown()}">Заминка</h4>
+
+                    <p>
+                        Длина подхода:
+                        <span th:replace="fragments/min-sec.html :: minsec(value=${task.getLength()})"> </span>
+                    </p>
+                    <div th:if="${task.repetitions} > 1">
+                        <p>Подходов: <b th:text="${task.getRepetitions()}">{{ $task["repetitions"] }}</b></p>
+                        <p>Передышка между подходами:
+                            <span th:replace="fragments/min-sec.html :: minsec(value=${task.getLength()} * ${task.getCooldownPercent()})"> </span>
+                        </p>
+                    </div>
+
+                    <div class="tab-pane show pulse-tab-pane">
+                        Ожидаемый пульс:
+                        <span th:text="${task.zone.expectedPulse}">{{ $task['zone']['expected_pulse'] }}</span> уд/мин.
+
+                    </div>
+                    <div class="tab-pane temp-tab-pane d-none">
+                        Ожидаемый темп:
+                        от <span th:replace="fragments/min-sec.html :: minsec(value=${task.zone.expectedTempoFrom})"> </span>
+                        до <span th:replace="fragments/min-sec.html :: minsec(value=${task.zone.expectedTempoTo})"> </span>
+                    </div>
+                    <div class="tab-pane speed-tab-pane d-none">
+                        Ожидаемая скорость:
+                        от <span th:text="${#numbers.formatDecimal(task.zone.expectedSpeedFrom, 1, 2)}">{{ round($task['zone']['expected_speed_from'], 2) }}</span> км/ч
+                        до <span th:text="${#numbers.formatDecimal(task.zone.expectedSpeedTo, 1, 2)}">{{ round($task['zone']['expected_speed_to'], 2) }}</span> км/ч
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <h2>Результаты тренировки:</h2>
+            <div class="row mb-3">
+                <form method="post" th:action="@{/workouts/{id}/update-result(id=${workout.id})}" th:object="${workoutResult}">
+                    <div class="mb-3">
+                        <label th:for="resultingTime" class="form-label">Время бега в минутах</label>
+                        <input type="number" th:field="*{resultingTime}" name="resulting_time" placeholder="" class="form-control"
+                               th:classappend="${#fields.hasErrors('resultingTime') ? 'is-invalid':''}"/>
+                        <div th:if="${#fields.hasErrors('resultingTime')}" th:errorclass="invalid-feedback" th:errors="*{resultingTime}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label th:for="resultingDistance" class="form-label">Метров преодолено</label>
+                        <input type="number" th:field="*{resultingDistance}" name="resulting_time" placeholder="" class="form-control"
+                               th:classappend="${#fields.hasErrors('resultingDistance') ? 'is-invalid':''}"/>
+                        <div th:if="${#fields.hasErrors('resultingDistance')}" th:errorclass="invalid-feedback" th:errors="*{resultingDistance}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label th:for="resultingAvgPulse" class="form-label">Средний пульс</label>
+                        <input type="number" th:field="*{resultingAvgPulse}" placeholder="" class="form-control"
+                               th:classappend="${#fields.hasErrors('resultingAvgPulse') ? 'is-invalid':''}"/>
+                        <div th:if="${#fields.hasErrors('resultingAvgPulse')}" th:errorclass="invalid-feedback" th:errors="*{resultingAvgPulse}"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label th:for="comment" class="form-label">Комментарий</label>
+                        <textarea type="text" th:field="*{comment}" placeholder="Оставьте комментарий для тренировки" class="form-control"
+                                  th:classappend="${#fields.hasErrors('comment') ? 'is-invalid':''}">
+
+                        </textarea>
+                        <div th:if="${#fields.hasErrors('comment')}" th:errorclass="invalid-feedback" th:errors="*{comment}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit">Сохранить</button>
+                    </div>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((t, i) => {
+        t.addEventListener('show.bs.tab', function (e) {
+            let targetClass = t.dataset.target
+            var pane = document.querySelectorAll(targetClass)
+            var sibling = document.querySelectorAll('.tab-pane.show')
+
+            for (var i = 0; i < sibling.length; i++) {
+                sibling[i].classList.remove('show');
+                sibling[i].classList.add('d-none');
+            }
+
+            for (var i = 0; i < pane.length; i++) {
+                pane[i].classList.add('show');
+                pane[i].classList.remove('d-none');
+            }
+        })
+    })
+</script>
+</body>
+</html>
