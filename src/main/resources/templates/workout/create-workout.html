@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org/"
+      th:replace="~{layout :: layout(~{::title}, ~{::section.content-header}, ~{::section.content}, ~{}, ~{})}">
+<head>
+    <title>Тренировки</title>
+</head>
+<body>
+<section class="content container pt-4">
+    <div class="row">
+        <div class="col">
+            <h1>Создать тренировку</h1>
+        </div>
+        <div class="col text-end">
+            <a th:href="@{/workouts}">&leftarrow; Назад к тренировкам</a>
+        </div>
+    </div>
+    <!--/*@thymesVar id="workoutRequest" type="ru.arh.athletics.domain.WorkoutRequest"*/-->
+    <div class="row mb-3">
+        <div class="col-6"></div>
+        <form method="post" th:object="${workoutRequest}">
+            <div class="mb-3">
+                <label th:for="age" class="form-label">Ваш возраст</label>
+                <input type="number" th:field="*{age}" placeholder="" required="required" class="form-control" th:classappend="${#fields.hasErrors('age') ? 'is-invalid':''}"/>
+                <div th:if="${#fields.hasErrors('age')}" th:errorclass="invalid-feedback" th:errors="*{age}"></div>
+            </div>
+            <div class="mb-3">
+                <label th:for="level" class="form-label">Уровень тяжести тренировки</label>
+                <input th:field="*{level}" type="number" min="1" max="38" required="required" class="form-control" th:classappend="${#fields.hasErrors('level') ? 'is-invalid':''}"/>
+                <div th:if="${#fields.hasErrors('level')}" th:errorclass="invalid-feedback" th:errors="*{level}"></div>
+            </div>
+            <div class="mb-3">
+                <label th:for="rfthrPulse" class="form-label">Средний пульс при прохождении RFTHR</label>
+                <input th:field="*{rfthrPulse}" type="number" required="required" class="form-control" th:classappend="${#fields.hasErrors('rfthrPulse') ? 'is-invalid':''}"/>
+                <div th:if="${#fields.hasErrors('rfthrPulse')}" th:errorclass="invalid-feedback" th:errors="*{rfthrPulse}"></div>
+            </div>
+            <div class="mb-3">
+                <label th:for="rfthrPulse" class="form-label">rfthr_tempo в секундах (СДЕЛАТЬ КРАСИВО)</label>
+                <input th:field="*{rfthrTempo}" type="number" required="required" class="form-control" th:classappend="${#fields.hasErrors('rfthrTempo') ? 'is-invalid':''}"/>
+                <div th:if="${#fields.hasErrors('rfthrTempo')}" th:errorclass="invalid-feedback" th:errors="*{rfthrTempo}"></div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Желаемая интенсивность</label>
+                <div class="form-check">
+                    <input th:field="*{desiredIntensity}" type="radio" value="0" required="required" class="form-check-input" th:classappend="${#fields.hasErrors('desiredIntensity') ? 'is-invalid':''}"/>
+                    <label class="form-check-label" th:for="desiredIntensity1">
+                        Синий
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input th:field="*{desiredIntensity}" type="radio" value="1" required="required" class="form-check-input" th:classappend="${#fields.hasErrors('desiredIntensity') ? 'is-invalid':''}"/>
+                    <label class="form-check-label" th:for="desiredIntensity2">
+                        Оранжевый
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input th:field="*{desiredIntensity}" type="radio" value="3" required="required" class="form-check-input" th:classappend="${#fields.hasErrors('desiredIntensity') ? 'is-invalid':''}"/>
+                    <label class="form-check-label" th:for="desiredIntensity3">
+                        Розовый
+                    </label>
+                </div>
+                <div class="form-check">
+                    <input th:field="*{desiredIntensity}" type="radio" value="4" required="required" class="form-check-input" th:classappend="${#fields.hasErrors('desiredIntensity') ? 'is-invalid':''}"/>
+                    <label class="form-check-label" th:for="desiredIntensity4">
+                        Красный
+                    </label>
+                </div>
+                <div th:if="${#fields.hasErrors('desiredIntensity')}" th:errorclass="invalid-feedback" th:errors="*{desiredIntensity}"></div>
+            </div>
+            <div class="mb-3">
+                <label th:for="rfthrPulse" class="form-label">Максимальное время тренировки (в секундах) (СДЕЛАТЬ КРАСИВО)</label>
+                <input th:field="*{maxTime}" type="number" required="required" class="form-control" th:classappend="${#fields.hasErrors('maxTime') ? 'is-invalid':''}"/>
+                <div th:if="${#fields.hasErrors('maxTime')}" th:errorclass="invalid-feedback" th:errors="*{maxTime}"></div>
+            </div>
+
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">
+                    Создать
+                </button>
+            </div>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        </form>
+    </div>
+</section>
+</body>
+</html>

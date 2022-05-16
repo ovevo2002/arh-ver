@@ -1,0 +1,7 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<body>
+<span th:fragment="minsec(value)">
+    <span th:text="${#numbers.formatInteger(value/60, 1)}"></span> минут <span th:text="${#numbers.formatInteger(value % 60, 1)}"></span> секунд
+</span>
+</body>
+</html>

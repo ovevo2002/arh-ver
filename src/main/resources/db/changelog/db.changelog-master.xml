@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
+    <changeSet id="202205142230" author="kds">
+        <sql>
+            create table users
+            (
+                id       bigserial    not null
+                    constraint users_pkey
+                        primary key,
+                enabled  boolean      not null,
+                password varchar(100) not null,
+                username varchar(50)  not null
+                    constraint uk_r43af9ap4edm43mmtq01oddj6
+                        unique
+            );
+
+            create table authorities
+            (
+                id        bigserial   not null
+                    constraint authorities_pkey
+                        primary key,
+                authority varchar(50) not null,
+                username  varchar(50) not null
+                    constraint fkk91upmbueyim93v469wj7b2qh
+                        references users(username)
+            );
+
+            create table workout
+            (
+                id                  bigserial not null
+                    constraint workout_pkey
+                        primary key,
+                comment             varchar(1024),
+                created_at          timestamp not null,
+                request             jsonb,
+                resulting_avg_pulse double precision,
+                resulting_distance  integer,
+                resulting_time      integer,
+                status              varchar(255),
+                tasks               jsonb,
+                workout_type        varchar(255),
+                client_id           bigint    not null
+                    constraint fko4q6xs8dbq03531e9p9e1bivs
+                        references users,
+                coach_id            bigint
+                    constraint fkex1bfuwp094nm2o3p0ihr9v0i
+                        references users,
+                result              jsonb
+            );
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
